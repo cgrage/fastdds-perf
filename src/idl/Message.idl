@@ -1,4 +1,5 @@
 struct Message
 {
-    long data[16];
+    // 4k data
+    long data[1000];
 };

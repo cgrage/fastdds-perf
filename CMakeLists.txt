@@ -9,8 +9,8 @@ add_compile_options(-std=c++11)
 
 file(GLOB DDS_HELLOWORLD_SOURCES_CXX "src/idl/*.cxx")
 
-add_executable(DDSHelloWorldPublisher src/HelloWorldPublisher.cpp ${DDS_HELLOWORLD_SOURCES_CXX})
-target_link_libraries(DDSHelloWorldPublisher fastrtps fastcdr)
+add_executable(publisher src/Publisher.cpp ${DDS_HELLOWORLD_SOURCES_CXX})
+target_link_libraries(publisher fastrtps fastcdr)
 
-add_executable(DDSHelloWorldSubscriber src/HelloWorldSubscriber.cpp ${DDS_HELLOWORLD_SOURCES_CXX})
-target_link_libraries(DDSHelloWorldSubscriber fastrtps fastcdr)
+add_executable(subscriber src/Subscriber.cpp ${DDS_HELLOWORLD_SOURCES_CXX})
+target_link_libraries(subscriber fastrtps fastcdr)

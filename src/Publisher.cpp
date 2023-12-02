@@ -25,14 +25,10 @@ private:
     class PubListener : public DataWriterListener
     {
     public:
+        std::atomic_int matched_;
 
-        PubListener() : matched_(0)
-        {
-        }
-
-        ~PubListener() override
-        {
-        }
+        PubListener() : matched_(0) { }
+        ~PubListener() override { }
 
         void on_publication_matched(DataWriter*, const PublicationMatchedStatus& info) override
         {
@@ -52,9 +48,6 @@ private:
                         << " is not a valid value for PublicationMatchedStatus current count change." << std::endl;
             }
         }
-
-        std::atomic_int matched_;
-
     } listener_;
 
 public:
@@ -120,11 +113,11 @@ public:
     }
 
     //!Send a publication
-    bool publish()
+    bool publish(int payload)
     {
         if (listener_.matched_ > 0)
         {
-            hello_.data()[0] = hello_.data()[0] + 1;
+            hello_.data()[0] = payload;
             writer_->write(&hello_);
             return true;
         }
@@ -132,34 +125,32 @@ public:
     }
 
     //!Run the Publisher
-    void run(uint32_t samples)
+    void run()
     {
-        uint32_t samples_sent = 0;
-        while (samples_sent < samples)
+        int count = 0;
+
+        for(;;)
         {
-            if (publish())
+            if (publish(count))
             {
-                samples_sent++;
-                std::cout << "Data: " << hello_.data()[0] << " SENT" << std::endl;
+                count++;
+                if (count % 32 == 0)
+                {
+                    // std::cout << "SENT" << std::endl;
+                }
             }
-            std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+            std::this_thread::sleep_for(std::chrono::milliseconds(32));
         }
     }
 };
 
-int main(
-        int argc,
-        char** argv)
+int main(int argc, char** argv)
 {
     std::cout << "Starting publisher." << std::endl;
-    uint32_t samples = 10;
 
-    HelloWorldPublisher* mypub = new HelloWorldPublisher();
-    if(mypub->init())
-    {
-        mypub->run(samples);
-    }
+    HelloWorldPublisher app;
+    if (app.init())
+        app.run();
 
-    delete mypub;
     return 0;
 }

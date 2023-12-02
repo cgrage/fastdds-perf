@@ -92,7 +92,7 @@ bool Message::operator !=(
  * @param _data New value to be copied in member data
  */
 void Message::data(
-        const std::array<int32_t, 16>& _data)
+        const std::array<int32_t, 1000>& _data)
 {
     m_data = _data;
 }
@@ -102,7 +102,7 @@ void Message::data(
  * @param _data New value to be moved in member data
  */
 void Message::data(
-        std::array<int32_t, 16>&& _data)
+        std::array<int32_t, 1000>&& _data)
 {
     m_data = std::move(_data);
 }
@@ -111,7 +111,7 @@ void Message::data(
  * @brief This function returns a constant reference to member data
  * @return Constant reference to member data
  */
-const std::array<int32_t, 16>& Message::data() const
+const std::array<int32_t, 1000>& Message::data() const
 {
     return m_data;
 }
@@ -120,7 +120,7 @@ const std::array<int32_t, 16>& Message::data() const
  * @brief This function returns a reference to member data
  * @return Reference to member data
  */
-std::array<int32_t, 16>& Message::data()
+std::array<int32_t, 1000>& Message::data()
 {
     return m_data;
 }

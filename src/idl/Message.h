@@ -135,30 +135,30 @@ public:
      * @param _data New value to be copied in member data
      */
     eProsima_user_DllExport void data(
-            const std::array<int32_t, 16>& _data);
+            const std::array<int32_t, 1000>& _data);
 
     /*!
      * @brief This function moves the value in member data
      * @param _data New value to be moved in member data
      */
     eProsima_user_DllExport void data(
-            std::array<int32_t, 16>&& _data);
+            std::array<int32_t, 1000>&& _data);
 
     /*!
      * @brief This function returns a constant reference to member data
      * @return Constant reference to member data
      */
-    eProsima_user_DllExport const std::array<int32_t, 16>& data() const;
+    eProsima_user_DllExport const std::array<int32_t, 1000>& data() const;
 
     /*!
      * @brief This function returns a reference to member data
      * @return Reference to member data
      */
-    eProsima_user_DllExport std::array<int32_t, 16>& data();
+    eProsima_user_DllExport std::array<int32_t, 1000>& data();
 
 private:
 
-    std::array<int32_t, 16> m_data{0};
+    std::array<int32_t, 1000> m_data{0};
 
 };
 

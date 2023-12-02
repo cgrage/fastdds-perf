@@ -24,7 +24,7 @@
 
 #include "Message.h"
 
-constexpr uint32_t Message_max_cdr_typesize {68UL};
+constexpr uint32_t Message_max_cdr_typesize {4004UL};
 constexpr uint32_t Message_max_key_cdr_typesize {0UL};
 
 

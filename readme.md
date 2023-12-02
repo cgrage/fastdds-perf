@@ -6,7 +6,7 @@
 
 '''bash
 cd src/idl
- ~/Fast-DDS-Gen/scripts/fastddsgen *.idl 
+ ~/Fast-DDS-Gen/scripts/fastddsgen -replace *.idl 
 '''
 
 ### Build
@@ -22,6 +22,6 @@ cmake --build .
 
 '''bash
 export LD_LIBRARY_PATH=~/Fast-DDS/install/lib
-./DDSHelloWorldSubscriber
-./DDSHelloWorldPublisher
+./subscriber
+./publisher
 '''
