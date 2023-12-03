@@ -3,9 +3,8 @@ PUBLISHER_COUNT="${1:-10}"
 export LD_LIBRARY_PATH=~/Fast-DDS/install/lib
 
 kill_everything() {
-    echo "Killing everything ..."
+    echo "Killing everything"
     killall -rwq "publisher|subscriber"
-    echo "(done)"
 }
 
 trap on_sigint SIGINT
@@ -22,25 +21,23 @@ start_process() {
     for i in $(seq $2)
     do
         taskset -c 0 $1 &
+        # slow-start
+        sleep 0.5
     done
 }
 
 kill_everything
 
-echo "About to start"
-echo "3" ; sleep 1
-echo "2" ; sleep 1
-echo "1" ; sleep 1
+echo "Starting processes"
 
-echo "Run test for 120 sek"
-
-start_process build/publisher $PUBLISHER_COUNT
 start_process build/subscriber 1
+start_process build/publisher $PUBLISHER_COUNT
 
 ps -C publisher,subscriber
 
 echo "Run test for 120 sek"
-sleep 120
+#sleep 120
+mpstat -P ALL 2 60
 echo "End of test"
 
 

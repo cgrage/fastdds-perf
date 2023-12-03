@@ -2,6 +2,7 @@
 
 #include <chrono>
 #include <thread>
+#include <vector>
 
 #include <fastdds/dds/domain/DomainParticipant.hpp>
 #include <fastdds/dds/domain/DomainParticipantFactory.hpp>
@@ -113,11 +114,11 @@ public:
     }
 
     //!Send a publication
-    bool publish(int payload)
+    bool publish(uint payload)
     {
         if (listener_.matched_ > 0)
         {
-            hello_.data()[0] = payload;
+            hello_.data()[0] = static_cast<int>(payload);
             writer_->write(&hello_);
             return true;
         }
@@ -125,32 +126,48 @@ public:
     }
 
     //!Run the Publisher
-    void run()
+    void on_timer_32ms(uint t)
     {
-        int count = 0;
-
-        for(;;)
-        {
-            if (publish(count))
-            {
-                count++;
-                if (count % 32 == 0)
-                {
-                    // std::cout << "SENT" << std::endl;
-                }
-            }
-            std::this_thread::sleep_for(std::chrono::milliseconds(32));
-        }
+        publish(t);
     }
 };
 
 int main(int argc, char** argv)
 {
-    std::cout << "Starting publisher." << std::endl;
+    int pubCount = 3;
+    if (argc == 2) pubCount = atoi(argv[1]);
+    if (pubCount < 1 || pubCount > 100)
+        return -1;
 
-    HelloWorldPublisher app;
-    if (app.init())
-        app.run();
+    printf("Starting publisher (%d runner)\n", pubCount);
+
+    std::vector<HelloWorldPublisher*> publisher;
+
+    for (int i = 0; i < pubCount; i++)
+    {
+        HelloWorldPublisher* app = new HelloWorldPublisher();
+        if (!app->init())
+            return -1;
+
+        publisher.push_back(app);
+    }
+
+    uint t = 0;
+    for(;;)
+    {
+        for (auto app : publisher)
+        {
+            app->on_timer_32ms(t);
+        }
+
+        std::this_thread::sleep_for(std::chrono::milliseconds(32));
+        t++;
+    }
+
+    for (auto app : publisher)
+    {
+        delete app;
+    }
 
     return 0;
 }
