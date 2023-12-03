@@ -134,7 +134,7 @@ public:
 
 int main(int argc, char** argv)
 {
-    int pubCount = 3;
+    int pubCount = 1;
     if (argc == 2) pubCount = atoi(argv[1]);
     if (pubCount < 1 || pubCount > 100)
         return -1;

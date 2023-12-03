@@ -131,31 +131,53 @@ public:
         return true;
     }
 
+    uint32_t statSamples_ = 0;
+
     //!Run the Subscriber
-    void run()
+    void on_timer_1s()
     {
-        uint32_t lastTime = 0;
+        uint32_t samples = listener_.samples_;
+        uint32_t diff = samples - statSamples_;
+        statSamples_ = samples;
 
-        for(;;)
-        {
-            std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-            uint32_t thisTime = listener_.samples_;
-            uint32_t diff = thisTime - lastTime;
-            float mps = diff / 1.0f;
-
-            printf("%0.f messages per second\n", mps);
-            lastTime = thisTime;
-        }
+        printf("%0.f messages per second\n", diff / 1.0f);
     }
 };
 
 int main(int argc, char** argv)
 {
-    std::cout << "Starting subscriber." << std::endl;
+    int subCount = 1;
+    if (argc == 2) subCount = atoi(argv[1]);
+    if (subCount < 1 || subCount > 100)
+        return -1;
 
-    HelloWorldSubscriber app;
-    if (app.init())
-        app.run();
+    printf("Starting subscriber (%d runner)\n", subCount);
+
+    std::vector<HelloWorldSubscriber*> subscriber;
+
+    for (int i = 0; i < subCount; i++)
+    {
+        HelloWorldSubscriber* app = new HelloWorldSubscriber();
+        if (!app->init())
+            return -1;
+
+        subscriber.push_back(app);
+    }
+
+    for(;;)
+    {
+        for (auto app : subscriber)
+        {
+            app->on_timer_1s();
+        }
+
+        std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+    }
+
+    for (auto app : subscriber)
+    {
+        delete app;
+    }
 
     return 0;
 }
