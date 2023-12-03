@@ -41,3 +41,7 @@ export LD_LIBRARY_PATH=~/Fast-DDS/install/lib
 ./subscriber
 ./publisher
 ```
+
+## Links
+
+- [Shared Memory Transport](https://fast-dds.docs.eprosima.com/en/latest/fastdds/transport/shared_memory/shared_memory.html)

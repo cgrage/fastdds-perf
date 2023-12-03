@@ -11,8 +11,10 @@
 #include <fastdds/dds/subscriber/SampleInfo.hpp>
 #include <fastdds/dds/subscriber/Subscriber.hpp>
 #include <fastdds/dds/topic/TypeSupport.hpp>
+#include <fastdds/rtps/transport/shared_mem/SharedMemTransportDescriptor.h>
 
 using namespace eprosima::fastdds::dds;
+using namespace eprosima::fastdds::rtps;
 
 class HelloWorldSubscriber
 {
@@ -92,41 +94,44 @@ public:
     //!Initialize the subscriber
     bool init()
     {
-        DomainParticipantQos participantQos;
-        participantQos.name("Participant_subscriber");
-        participant_ = DomainParticipantFactory::get_instance()->create_participant(0, participantQos);
+        DomainParticipantQos dpQos;
+        dpQos.name("Participant_subscriber");
 
-        if (participant_ == nullptr)
+        bool useShmTransport = false;
+        if (useShmTransport)
         {
-            return false;
+            std::shared_ptr<SharedMemTransportDescriptor> shm_transport = std::make_shared<SharedMemTransportDescriptor>();
+
+            // [OPTIONAL] ThreadSettings configuration
+            // shm_transport->default_reception_threads(eprosima::fastdds::rtps::ThreadSettings{-1, 0, 0, -1});
+            // shm_transport->set_thread_config_for_port(12345, eprosima::fastdds::rtps::ThreadSettings{-1, 0, 0, -1});
+            // shm_transport->dump_thread(eprosima::fastdds::rtps::ThreadSettings{-1, 0, 0, -1});
+
+            dpQos.transport().user_transports.push_back(shm_transport);
+            dpQos.transport().use_builtin_transports = false;
         }
+
+        participant_ = DomainParticipantFactory::get_instance()->create_participant(0, dpQos);
+        if (participant_ == nullptr)
+            return false;
 
         // Register the Type
         type_.register_type(participant_);
 
         // Create the subscriptions Topic
         topic_ = participant_->create_topic("MessageTopic", "Message", TOPIC_QOS_DEFAULT);
-
         if (topic_ == nullptr)
-        {
             return false;
-        }
 
         // Create the Subscriber
         subscriber_ = participant_->create_subscriber(SUBSCRIBER_QOS_DEFAULT, nullptr);
-
         if (subscriber_ == nullptr)
-        {
             return false;
-        }
 
         // Create the DataReader
         reader_ = subscriber_->create_datareader(topic_, DATAREADER_QOS_DEFAULT, &listener_);
-
         if (reader_ == nullptr)
-        {
             return false;
-        }
 
         return true;
     }
